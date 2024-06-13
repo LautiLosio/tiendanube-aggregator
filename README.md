@@ -13,14 +13,22 @@
 
 @Author: [sebasfavaron](https://github.com/sebasfavaron)
 
-### How to run
+### How to run locally
 1. Clone the repository
 2. Go into the different directories and run `npm install`
-3. Run `npm start` in the subdirectories in the following order:
-    1. `./scraper`
+3. Run `npm run start` in the subdirectories in the following order:
+    1. `./scraper` 
+      This one needs 2 params: `multi` or `single` (for multi or single page scraping) and `url` (the url to scrape from)
+      Examples: 
+      `npm run start single https://ecommerce.com.ar/`
+      `npm run start multi ./urls.txt`
     2. `./api`
     3. `./frontend` this one uses `npm run dev` instead of `npm start`
 4. Open your browser and go to `localhost:3000` to see if the backend is running
+5. Create a `.env` file in the `./frontend` directory with the following content:
+    ```
+    VITE_API_URL=http://localhost:3000
+    ```
 5. Open your browser and go to `localhost:5173` to see if the frontend is running
 
 Check it out already working [here](https://shopping-arg.netlify.app/)! Feel free to suggest improvements or raise bugs via the Issues tab
