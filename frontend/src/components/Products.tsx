@@ -11,7 +11,7 @@ const fetchProducts = async (limit: number, offset: number, search = '') => {
     const response = await fetch(
       `${
         import.meta.env.VITE_API_URL
-      }/products?limit=${limit}&offset=${offset}&search=${search}&sort=price&order=ASC`
+      }/products?limit=${limit}&offset=${offset}&search=${search}&sort=inventoryLevel&order=DESC`
     );
     if (!response.ok) throw new Error('Network response was not ok');
 
@@ -76,8 +76,9 @@ export const Products = () => {
               <Product
                 key={product.url}
                 name={product.name}
-                description={product.description}
                 price={product.price}
+                available={product.available}
+                inventoryLevel={product.inventoryLevel}
                 image={product.image}
                 url={product.url}
               />

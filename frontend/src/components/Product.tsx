@@ -2,23 +2,26 @@ import { decodeHtml } from '../utils';
 
 export type ProductData = {
   name: string;
-  description: string;
   price: number;
+  available: boolean;
+  inventoryLevel: number;
   image: string;
   url: string;
 };
 
 type ProductProps = {
   name: string;
-  description: string;
   price: number;
+  available: boolean;
+  inventoryLevel: number;
   image: string;
   url: string;
 };
 export const Product = ({
   name,
-  description,
   price,
+  available,
+  inventoryLevel,
   image,
   url,
 }: ProductProps) => {
@@ -47,7 +50,10 @@ export const Product = ({
           <p className='text-sm font-medium text-gray-900'>${price}</p>
         </div>
         <p className='mt-1 text-sm text-left text-gray-500'>
-          {decodeHtml(description)}
+          {available ? 'In stock' : 'Out of stock'}
+        </p>
+        <p className='mt-1 text-sm text-left text-gray-500'>
+          Stock: {inventoryLevel}
         </p>
       </div>
     </div>

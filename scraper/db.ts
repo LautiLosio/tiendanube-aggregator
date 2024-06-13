@@ -3,10 +3,11 @@ import { Database } from 'sqlite3';
 
 export type Product = {
   name: string;
-  description: string;
   price: number;
   image: string;
   url: string;
+  available: boolean;
+  inventoryLevel: number;
 };
 
 type DatabaseType = Awaited<ReturnType<typeof open>>;
@@ -19,11 +20,12 @@ export const getDb = async (customDbName = '../api/database.db') => {
     `CREATE TABLE IF NOT EXISTS product (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name VARCHAR(255) NOT NULL,
-      description TEXT NOT NULL,
-      price REAL NOT NULL,
+      price REAL NOT NULL, 
+      available BOOLEAN NOT NULL,
+      inventoryLevel REAL NOT NULL,
       image TEXT NOT NULL,
       url TEXT NOT NULL,
-      UNIQUE (name, description)
+      UNIQUE (name)
   )`
   );
 
@@ -33,12 +35,13 @@ export const getDb = async (customDbName = '../api/database.db') => {
 export const insertProduct = async (db: DatabaseType, product: Product) => {
   await db.run(
     `INSERT OR REPLACE INTO product
-      (name, description, price, image, url) VALUES
-      (?, ?, ?, ?, ?)`,
+      (name, price, available, inventoryLevel, image, url) VALUES
+      (?, ?, ?, ?, ?, ?)`,
     [
       product.name,
-      product.description,
       product.price,
+      product.available,
+      product.inventoryLevel,
       product.image,
       product.url,
     ]
@@ -52,6 +55,10 @@ export const getAllProducts = async (db: DatabaseType) => {
 export const getProductByName = async (db: DatabaseType, name: string) => {
   return db.get(`SELECT * FROM product WHERE name = ?`, [name]);
 };
+
+export const getAvailableProducts = async (db: DatabaseType) => {
+  return db.all(`SELECT * FROM product WHERE available = 1`);
+}
 
 const migrateFromJSON = async (db: DatabaseType) => {
   const products = require('./allProducts.json');

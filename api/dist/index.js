@@ -39,6 +39,7 @@ const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const typeorm_1 = require("typeorm");
 const models_1 = require("./models");
+const { debug } = require("console");
 require("reflect-metadata");
 dotenv.config();
 const app = (0, express_1.default)();
@@ -72,11 +73,11 @@ app.get('/', (req, res) => {
 });
 app.get('/products', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { limit, offset, search, sort, order } = req.query;
+        const { limit, offset, search, sort, order, available } = req.query;
         const query = {
             skip: offset ? Number(offset) : 0,
-            take: limit ? Number(limit) : 10,
-            where: [{}],
+            take: limit ? Number(limit) : 100,
+            where: [{}], 
             order: {},
         };
         if (search) {
@@ -84,20 +85,25 @@ app.get('/products', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
                 {
                     price: (0, typeorm_1.Not)(0),
                     name: (0, typeorm_1.ILike)(`%${search}%`),
-                },
-                {
-                    price: (0, typeorm_1.Not)(0),
-                    description: (0, typeorm_1.ILike)(`%${search}%`),
-                },
+                }
             ];
         }
         else {
             query.where = [{ price: (0, typeorm_1.Not)(0) }];
         }
+        if (available) {
+            query.where[0].available = available === 'true';
+        }
         if (sort === 'price') {
             query.order = { price: order === 'DESC' ? 'DESC' : 'ASC' };
         }
-        const [products, total] = yield models_1.Product.findAndCount(query);
+        if (sort === 'inventoryLevel') {
+            query.order = { inventoryLevel: order === 'DESC' ? 'DESC' : 'ASC' };
+        }
+
+        console.log(query);
+
+        const [products, total] = yield models_1.Product.findAndCount(query);        
         res.json({ products, total });
     }
     catch (error) {
@@ -106,7 +112,7 @@ app.get('/products', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 }));
 app.post('/products', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { name, description, price, image, url } = req.body;
+        const { name, price, available, inventoryLevel, image, url } = req.body;
         // Validate input using Joi or other validation library
         // Create a new product in the database
         // Return the newly created product

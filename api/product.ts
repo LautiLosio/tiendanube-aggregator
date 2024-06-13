@@ -8,34 +8,37 @@ export const getProductsWithPagination = async (
   next: NextFunction
 ) => {
   try {
-    const { limit, offset, search, sort, order } = req.query;
+    const { limit, offset, search, sort, order, available } = req.query;
 
     // filter urls that include the word 'kazuma'
     const products = await Product.query(`
       SELECT * FROM product
       WHERE price != 0
-      AND url NOT LIKE '%kazuma%'
       ${
         search
-          ? `AND (name LIKE '%${search}%' OR description LIKE '%${search}%')`
+          ? `AND (name LIKE '%${search}%')`
           : ''
       }
       ${
-        sort === 'price'
-          ? `ORDER BY price ${order === 'DESC' ? 'DESC' : 'ASC'}`
+        available
+          ? `AND (available = ${available})`
           : ''
       }
-      LIMIT ${limit ? Number(limit) : 10}
+      ${
+        sort
+          ? `ORDER BY ${sort} ${order === 'DESC' ? 'DESC' : 'ASC'}`
+          : ''
+      }
+      LIMIT ${limit ? Number(limit) : 100}
       OFFSET ${offset ? Number(offset) : 0}
     `);
     const total = (
       await Product.query(`
     SELECT COUNT(*) FROM product
     WHERE price != 0
-    AND url NOT LIKE '%kazuma%'
     ${
       search
-        ? `AND (name LIKE '%${search}%' OR description LIKE '%${search}%')`
+        ? `AND (name LIKE '%${search}%')`
         : ''
     }
   `)
@@ -53,7 +56,7 @@ export const postProduct = async (
   next: NextFunction
 ) => {
   try {
-    const { name, description, price, image, url } = req.body;
+    const { name, price, available, inventoryLevel, image, url } = req.body;
     // Validate input using Joi or other validation library
     // Create a new product in the database
     // Return the newly created product

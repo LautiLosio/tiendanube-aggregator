@@ -73,19 +73,21 @@ async function addProductByPage(
       .replace(/\t/g, '')
       .replace(/\\/g, '\\\\');
     const productInfo = JSON.parse(productInfoText);
+    console.log(productInfo.offers.availability === 'http://schema.org/InStock');
     if (
       productInfo &&
       productInfo.offers &&
       productInfo.offers.price &&
       productInfo.offers.url &&
+      productInfo.offers.availability &&
       productInfo.name &&
-      productInfo.image &&
-      productInfo.description
+      productInfo.image
     ) {
       products.push({
         name: productInfo.name,
-        description: productInfo.description,
         price: productInfo.offers.price,
+        available: productInfo.offers.availability === 'http://schema.org/InStock',
+        inventoryLevel: productInfo.offers.inventoryLevel.value ?? 0,
         image: productInfo.image,
         url: productInfo.offers.url,
       });

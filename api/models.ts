@@ -9,7 +9,10 @@ export class Product extends BaseEntity {
   name!: string;
 
   @Column({ type: 'text', nullable: false })
-  description!: string;
+  available!: string;
+
+  @Column({ type: 'real', nullable: false })
+  inventoryLevel!: number;
 
   @Column({ type: 'real', nullable: false })
   price!: number;
